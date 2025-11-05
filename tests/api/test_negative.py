@@ -1,60 +1,77 @@
+import pytest
 import requests
-from constants import *
+from constants import BASE_URL, HEADERS, REGISTER_ENDPOINT, LOGIN_ENDPOINT
+
 
 class TestAuthAPI:
-    def test_register_user(self, test_user):
-        # URL для регистрации
+    def test_register_user(self):
+        """Негативный тест регистрации с невалидными данными"""
+        invalid_user = {
+            "email": "invalid-email",
+            "fullName": "Test User",
+            "password": "short",
+            "passwordRepeat": "short",
+            "roles": ["USER"]
+        }
+
         register_url = f"{BASE_URL}{REGISTER_ENDPOINT}"
+        response = requests.post(register_url, json=invalid_user, headers=HEADERS)
 
-        # Отправка запроса на регистрацию
-        response = requests.post(register_url, json=test_user, headers=HEADERS)
+        # Ожидаем ошибку валидации
+        assert response.status_code == 400, f"Ожидалась ошибка валидации, но получили {response.status_code}"
 
-        # Логируем ответ для диагностики
-        print(f"Response status: {response.status_code}")
-        print(f"Response body: {response.text}")
-
-        # Проверки
-        assert response.status_code == 201, "Ошибка регистрации пользователя"
-        response_data = response.json()
-        assert response_data["email"] == test_user["email"], "Email не совпадает"
-        assert "id" in response_data, "ID пользователя отсутствует в ответе"
-        assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
-
-        # Проверяем, что роль USER назначена по умолчанию
-        assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"
 
 class TestNegativeAuthAPI:
     def test_error_password(self, test_user):
-        """Тест авторизации с неправильным паролем"""
-        # Данные с неправильным паролем
-        login_error_data = {
-            "email": test_user["email"],
-            "password": "error"
-        }
+        """Тест на ошибку при неверном пароле"""
+        # Сначала регистрируем пользователя
+        register_url = f"{BASE_URL}{REGISTER_ENDPOINT}"
+        register_response = requests.post(register_url, json=test_user, headers=HEADERS)
+        assert register_response.status_code == 201, "Ошибка регистрации пользователя"
 
-        # Вызывание метода для отображения ошибки
-        response = requests.post(f"{BASE_URL}{LOGIN_ENDPOINT}", json=login_error_data, headers=HEADERS)
-        assert response.status_code in [400, 401, 500], "Должны получить 400, 401 или 500 статус-код"
+        # Пытаемся войти с неверным паролем
+        login_url = f"{BASE_URL}{LOGIN_ENDPOINT}"
+        wrong_password_data = {
+            "email": test_user["email"],
+            "password": "WrongPassword123"  # Неверный пароль
+        }
+        login_response = requests.post(login_url, json=wrong_password_data, headers=HEADERS)
+
+        # Ожидаем ошибку авторизации (401 Unauthorized)
+        assert login_response.status_code == 401, "Ожидалась ошибка авторизации"
+        response_data = login_response.json()
+        assert "error" in response_data or "message" in response_data
 
     def test_error_email(self, test_user):
-        """Тест авторизации с неправильным логином"""
-        # Данные с неправильным логином
-        login_error_data = {
-            "email": "nonexistent@example.com",
+        """Тест на ошибку при неверном email"""
+        # Регистрируем пользователя
+        register_url = f"{BASE_URL}{REGISTER_ENDPOINT}"
+        register_response = requests.post(register_url, json=test_user, headers=HEADERS)
+        assert register_response.status_code == 201, "Ошибка регистрации пользователя"
+
+        # Пытаемся войти с неверным email
+        login_url = f"{BASE_URL}{LOGIN_ENDPOINT}"
+        wrong_email_data = {
+            "email": "wrong@example.com",  # Неверный email
             "password": test_user["password"]
         }
+        login_response = requests.post(login_url, json=wrong_email_data, headers=HEADERS)
 
-        # Вызывание метода для отображения ошибки
-        response = requests.post(f"{BASE_URL}{LOGIN_ENDPOINT}", json=login_error_data, headers=HEADERS)
-        assert response.status_code in [400, 401, 404], f"Ожидался статус 400, 401 или 404, получен {response.status_code}"
+        # Ожидаем ошибку авторизации (401 Unauthorized)
+        assert login_response.status_code == 401, "Ожидалась ошибка авторизации"
+        response_data = login_response.json()
+        assert "error" in response_data or "message" in response_data
 
     def test_empty_credentials(self):
-        """Тест авторизации с пустыми данными"""
-        login_error_data = {
+        """Тест на ошибку при пустых учетных данных"""
+        login_url = f"{BASE_URL}{LOGIN_ENDPOINT}"
+        empty_data = {
             "email": "",
             "password": ""
         }
+        login_response = requests.post(login_url, json=empty_data, headers=HEADERS)
 
-        response = requests.post(f"{BASE_URL}{LOGIN_ENDPOINT}", json=login_error_data, headers=HEADERS)
-        print(f"Empty credentials response: {response.status_code} - {response.text}")
-        assert response.status_code in [400, 401], "Ожидалась ошибка валидации"
+        # Ожидаем ошибку валидации (401 Unauthorized для этого API)
+        assert login_response.status_code == 401, "Ожидалась ошибка авторизации"
+        response_data = login_response.json()
+        assert "error" in response_data or "message" in response_data

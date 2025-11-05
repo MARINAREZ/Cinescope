@@ -1,81 +1,39 @@
+import pytest
 import requests
+from constants import BASE_URL, HEADERS
 
-from custom_requester.custom_requester import CustomRequester
-from constants import *
 
-class AuthAPI(CustomRequester):
-    """
-    Класс для работы с API аутентификации.
-    """
+class TestAuthAPI:
+    def test_register_user(self, test_user):
+        """
+        Тест на регистрацию пользователя.
+        """
+        register_url = f"{BASE_URL}/register"
+        response = requests.post(register_url, json=test_user, headers=HEADERS)
 
-    def __init__(self, session):
-        super().__init__(session=session, base_url=BASE_URL)
+        assert response.status_code == 201, f"Ошибка регистрации: {response.text}"
+        response_data = response.json()
+        assert "id" in response_data
+        assert response_data["email"] == test_user["email"]
 
-    def register_user(self, user_data, expected_status=201):
+    def test_register_and_login_user(self, test_user):
         """
-        Регистрация нового пользователя.
-        :param user_data: Данные пользователя для регистрации.
-        :param expected_status: Ожидаемый статус-код.
+        Тест на регистрацию и авторизацию пользователя.
         """
-        return self.send_request(
-            method="POST",
-            endpoint="/register",
-            data=user_data,
-            expected_status=expected_status
-        )
+        # Регистрация
+        register_url = f"{BASE_URL}/register"
+        register_response = requests.post(register_url, json=test_user, headers=HEADERS)
+        assert register_response.status_code == 201, f"Ошибка регистрации: {register_response.text}"
 
-    def login_user(self, login_data, expected_status=200):
-        """
-        Авторизация пользователя.
-        :param login_data: Данные для входа (email и password).
-        :param expected_status: Ожидаемый статус-код.
-        """
-        return self.send_request(
-            method="POST",
-            endpoint=LOGIN_ENDPOINT,
-            data=login_data,
-            expected_status=expected_status
-        )
+        # Авторизация
+        login_url = f"{BASE_URL}/login"
+        login_data = {
+            "email": test_user["email"],
+            "password": test_user["password"]
+        }
+        login_response = requests.post(login_url, json=login_data, headers=HEADERS)
+        assert login_response.status_code == 200, f"Ошибка авторизации: {login_response.text}"
 
-    def logout_user(self, expected_status=200):
-        """
-        Выход пользователя из системы.
-        :param expected_status: Ожидаемый статус-код.
-        """
-        return self.send_request(
-            method="POST",
-            endpoint="/auth/logout",
-            expected_status=expected_status
-        )
-
-    def refresh_token(self, refresh_token, expected_status=200):
-        """
-        Обновление access token.
-        :param refresh_token: Refresh token.
-        :param expected_status: Ожидаемый статус-код.
-        """
-        return self.send_request(
-            method="POST",
-            endpoint="/auth/refresh",
-            data={"refreshToken": refresh_token},
-            expected_status=expected_status
-        )
-
-    def get_current_user(self, expected_status=200):
-        """
-        Получение информации о текущем пользователе.
-        :param expected_status: Ожидаемый статус-код.
-        """
-        return self.send_request(
-            method="GET",
-            endpoint="/auth/me",
-            expected_status=expected_status
-        )
-
-    def delete_user(self, user_id, expected_status=200):
-        return self.send_request(
-            method="delete",
-            endpoint=f"user/{user_id}",
-            expected_status = expected_status
-        )
-
+        login_data = login_response.json()
+        assert "accessToken" in login_data
+        assert login_data["user"]["email"] == test_user["email"]

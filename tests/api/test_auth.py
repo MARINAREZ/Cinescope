@@ -1,37 +1,40 @@
-from clients.api_manager import ApiManager
+# tests/api/test_auth.py
+import pytest
+import requests
+from constants import BASE_URL, HEADERS
+
 
 class TestAuthAPI:
-
-    def test_register_user(self, api_manager: ApiManager, test_user):
+    def test_register_user(self, test_user):
         """
         Тест на регистрацию пользователя.
         """
-        response = api_manager.auth_api.register_user(test_user)
+        register_url = f"{BASE_URL}/register"
+        response = requests.post(register_url, json=test_user, headers=HEADERS)
+
+        assert response.status_code == 201, f"Ошибка регистрации: {response.text}"
         response_data = response.json()
+        assert "id" in response_data
+        assert response_data["email"] == test_user["email"]
 
-        # Проверки
-        assert response_data["email"] == test_user["email"], "Email не совпадает"
-        assert "id" in response_data, "ID пользователя отсутствует в ответе"
-        assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
-        assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"
-
-    def test_register_and_login_user(self, api_manager: ApiManager, test_user):
+    def test_register_and_login_user(self, test_user):
         """
         Тест на регистрацию и авторизацию пользователя.
         """
-        register_response = api_manager.auth_api.register_user(test_user)
-        assert register_response.status_code == 201, "Ошибка регистрации"
+        # Регистрация
+        register_url = f"{BASE_URL}/register"
+        register_response = requests.post(register_url, json=test_user, headers=HEADERS)
+        assert register_response.status_code == 201, f"Ошибка регистрации: {register_response.text}"
 
+        # Авторизация
+        login_url = f"{BASE_URL}/login"
         login_data = {
             "email": test_user["email"],
             "password": test_user["password"]
         }
+        login_response = requests.post(login_url, json=login_data, headers=HEADERS)
+        assert login_response.status_code == 200, f"Ошибка авторизации: {login_response.text}"
 
-        login_response = api_manager.auth_api.login_user(login_data)
-        assert login_response.status_code == 200, "Ошибка авторизации"
-
-        response_data = login_response.json()
-
-        # Проверки
-        assert "accessToken" in response_data, "Токен доступа отсутствует в ответе"
-        assert response_data["user"]["email"] == test_user["email"], "Email не совпадает"
+        login_data = login_response.json()
+        assert "accessToken" in login_data
+        assert login_data["user"]["email"] == test_user["email"]

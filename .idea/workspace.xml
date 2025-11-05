@@ -5,28 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b04c2100-e28a-41a6-be6c-60ce77b17f4b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Cinescope.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/clients/api_manager.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/clients/auth_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conftest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/custom_requester/custom_requester.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/enums/hosts.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pytest.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/api/test_auth.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/api/test_negative.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/api/test_other_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/api/user_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/ui/test_login_page.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/ui/test_registration_page.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/data_generator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clients/movies_manager.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/api/test_api_moves.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/api_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/api_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/auth_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/auth_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/conftest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/api/test_auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api/test_auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/api/test_negative.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api/test_negative.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +30,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;MARINAREZ&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/MARINAREZ/Cinescope.git&quot;,
+    &quot;accountId&quot;: &quot;e916cfb1-2d8a-406d-a95a-49007455b88e&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -54,22 +53,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Python tests for test_auth.TestAuthAPI.test_register_and_login_user.executor": "Run",
-    "Python tests.Python tests in test_auth.py.executor": "Run",
-    "Python tests.Python tests in test_negative.py.executor": "Run",
-    "Python.auth_api.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests for test_auth.TestAuthAPI.test_register_and_login_user.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_auth.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_negative.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.auth_api.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\tests\movies" />
+      <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\tests\api" />
       <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\clients" />
       <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\custom_requester" />
     </key>
