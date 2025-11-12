@@ -1,4 +1,4 @@
-from custom_requester.custom_requester import CustomRequester
+from clients.custom_requester import CustomRequester
 from constants import *
 class UserAPI(CustomRequester):
     """

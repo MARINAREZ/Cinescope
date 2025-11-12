@@ -5,15 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b04c2100-e28a-41a6-be6c-60ce77b17f4b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/clients/movies_manager.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/api/test_api_moves.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clients/custom_requester.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clients/api_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/api_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/auth_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/auth_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/movies_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/movies_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/conftest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/api/test_auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api/test_auth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/api/test_negative.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api/test_negative.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_requester/custom_requester.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/api/test_api_moves.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api/test_api_moves.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/api/user_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api/user_api.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,9 +69,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\clients" />
       <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\tests\movies" />
       <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\tests\api" />
-      <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\clients" />
       <recent name="C:\Users\admin-msk\PycharmProjects\Cinescope\custom_requester" />
     </key>
   </component>

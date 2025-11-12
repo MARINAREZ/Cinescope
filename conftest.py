@@ -2,8 +2,7 @@ import pytest
 import requests
 from faker import Faker
 from utils.data_generator import DataGenerator
-from clients.movies_manager import MoviesManager
-from clients.api_manager import ApiManager
+from clients.movies_api import MoviesApi
 from constants import *
 
 faker = Faker()
@@ -40,10 +39,7 @@ def admin_session():
 
 @pytest.fixture(scope="function")
 def movies_manager(admin_session):
-    """
-    Фикстура для менеджера фильмов.
-    """
-    return MoviesManager(admin_session)
+    return MoviesApi(admin_session)
 
 
 @pytest.fixture(scope="function")

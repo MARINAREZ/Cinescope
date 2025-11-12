@@ -1,12 +1,11 @@
 import requests
-from clients.movies_api import MoviesApi
 
-class ApiManager:
+class CustomRequester:
     def __init__(self, session=None):
-        self.session = session
-        self.movies_api = MoviesApi(session)
+        self.session = session or requests.Session()
+        self.base_url = None
 
-    def _send_request(self, method, endpoint, data=None, params=None, expected_status=200):
+    def send_request(self, method, endpoint, data=None, params=None, expected_status=200):
         """Базовый метод для отправки запросов"""
         url = f"{self.base_url}{endpoint}"
 
@@ -24,7 +23,3 @@ class ApiManager:
             )
 
         return response
-
-    def send_request(self, method, endpoint, data=None, params=None, expected_status=200):
-        """Публичный метод для отправки запросов"""
-        return self._send_request(method, endpoint, data, params, expected_status)

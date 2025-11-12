@@ -1,8 +1,8 @@
-from clients.api_manager import ApiManager
+from clients.custom_requester import CustomRequester
 from constants import API_URL
 
-class MoviesManager(ApiManager):
-    def __init__(self, session):
+class MoviesApi(CustomRequester):
+    def __init__(self, session=None):
         super().__init__(session)
         self.base_url = API_URL
         self.movies_endpoint = "/movies"
@@ -36,7 +36,7 @@ class MoviesManager(ApiManager):
     def update_movie(self, movie_id, update_data):
         """Обновление фильма"""
         return self.send_request(
-            method="PATCH",  # Меняем PUT на PATCH
+            method="PATCH",
             endpoint=f"{self.movies_endpoint}/{movie_id}",
             data=update_data,
             expected_status=200
@@ -49,3 +49,5 @@ class MoviesManager(ApiManager):
             endpoint=f"{self.movies_endpoint}/{movie_id}",
             expected_status=200
         )
+
+MoviesManager = MoviesApi
