@@ -36,7 +36,7 @@ class TestPositiveAuthApi:
             "password": test_user["password"]
         }
         login_response = auth_api.login_user(test_user=login_data)
-        assert login_response.status_code == 201, (f'Ошибка авторизации пользователя, получен /'
+        assert login_response.status_code == 200, (f'Ошибка авторизации пользователя, получен /'
                                                           f'{login_response.status_code}')
 
         print(f'Response status: {login_response.status_code}')

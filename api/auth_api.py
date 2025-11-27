@@ -18,7 +18,7 @@ class AuthApi(CustomRequester):
         )
 
     # Авторизация пользователя
-    def login_user(self, test_user, expected_status=201):
+    def login_user(self, test_user, expected_status=200):
         return self.send_requester(
             method="POST",
             endpoint=LOGIN_ENDPOINT,

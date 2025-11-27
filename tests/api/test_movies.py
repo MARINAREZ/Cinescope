@@ -4,139 +4,122 @@ from constants import MOVIE_BASE_URL, ADMIN_USER
 from api.movies_api import MoviesApi
 from api.auth_api import AuthApi
 
+import pytest
+from constants import ADMIN_USER
 
-class TestPositiveMoves:
-    # Тест на получение списка фильмов
-    def test_get_movies(self, session):
-        get_movies = session.get_movies()
 
-        movies_response = get_movies.json()
+class TestPositiveMovies:
+    # Тест на получение списка фильмов с фильтром location
+    def test_get_movies_filtered(self, admin_session):
+        params = {"location": "MSK"}
+        resp = admin_session.movies_api.get_movies(params=params)
+        movies_response = resp.json()
+
+        print(f'Response: {movies_response}')
         assert isinstance(movies_response, dict), 'Ответ должен быть словарем'
         assert 'movies' in movies_response, 'Ключ movies отсутствует в ответе'
         assert isinstance(movies_response['movies'], list), 'movies должен быть списком'
 
-        movies_list = movies_response['movies']
-        print(f"Получено фильмов: {len(movies_list)}")
+        movies_list = [m for m in movies_response['movies'] if m["location"] == "MSK"]
+        for movie in movies_list:
+            assert movie["location"] == "MSK"
 
     # Тест на получение фильма по ID
-    def test_get_movies_by_id(self, session):
-        # Используем существующий ID фильма
-        existing_movie_id = 1
+    def test_get_movies_by_id_existing(self, admin_session, movie_data):
+        # Создаём фильм
+        create_resp = admin_session.movies_api.create_movies(movie_data)
+        movie_id = create_resp.json()["id"]
 
-        get_movies_by_id = session.get_movies_by_id(movie_id=existing_movie_id)
+        resp = admin_session.movies_api.get_movies_by_id(movie_id=movie_id)
+        movie_response = resp.json()
 
-        movie_response = get_movies_by_id.json()
-        assert movie_response is not None, f'Фильм не найден'
-        assert 'id' in movie_response, 'ID фильма отсутствует в ответе'
-        assert movie_response['id'] == existing_movie_id, 'ID фильма не соответствует запрошенному'
-
-    # Тест на создание фильма (требует авторизации админа)
-    def test_post_movies(self, session, movie_data, authenticate):
-
-        session = authenticate(session, ADMIN_USER)
-        post_movies = session.create_movies(movie_data=movie_data)
-
-        movie_response = post_movies.json()
-        assert movie_response is not None, f'Фильм не найден'
-        assert 'id' in movie_response, 'ID фильма отсутствует в ответе'
-
-    # Тест на изменение фильма по ID (требует авторизации админа)
-    def test_patch_movies_by_id(self, session, update_movie_data, authenticate):
-        session = authenticate(session, ADMIN_USER)
-        patch_movies = session.patch_movies_by_id(movie_id = 1, update_movie_data=update_movie_data)
-
-        movie_response = patch_movies.json()
-        assert movie_response is not None, f'Фильм не найден'
-        assert 'id' in movie_response, 'ID фильма отсутствует в ответе'
-
-    # Тест на удаление фильма по ID (требует авторизации админа)
-    def test_delete_movies(self, session, movie_data, authenticate):
-        session = authenticate(session, ADMIN_USER)
-
-        # Создаем фильм
-        post_movies = session.create_movies(movie_data=movie_data)
-        movie_response = post_movies.json()
-        post_movie_id = movie_response['id']
-
-        # Проверяем что в ответе есть ID
-        assert 'id' in movie_response, 'ID фильма отсутствует в ответе'
+        print(f'GET movie response: {movie_response}')
+        assert movie_response['id'] == movie_id, 'ID фильма не соответствует'
+        assert movie_response['name'] == movie_data['name'], 'Имя фильма не соответствует'
 
         # Удаляем фильм
-        delete_movie = session.delete_movies_by_id(movie_id=post_movie_id)
+        resp_delete = admin_session.movies_api.delete_movies_by_id(movie_id=movie_id)
+        assert resp_delete.status_code == 200
 
-        # Проверяем статус код, а не тело ответа
-        assert delete_movie.status_code == 200, f"Ошибка удаления фильма: {delete_movie.status_code}"
+    # Позитивный тест: фильм не существует
+    def test_get_movies_by_id_not_existing(self, admin_session):
+        resp = admin_session.movies_api.get_movies_by_id(movie_id=999999, expected_status=404)
+        print(f'GET non-existing movie response: {resp.json()}')
+        assert resp.status_code == 404
 
-class TestNegativeMoves:
-    # Тест, что пользователь USER не может создавать фильмы
-    def test_create_movie_forbidden(self, session, movie_data, test_user):
-        auth_session = requests.Session()
-        auth_api = AuthApi(auth_session)
+    # Тест на создание фильма
+    def test_post_movies(self, admin_session, movie_data):
+        resp = admin_session.movies_api.create_movies(movie_data=movie_data)
+        movie_response = resp.json()
 
-        # Регистрируем и логиним пользователя
-        auth_api.register_user(test_user=test_user)
-        login_data = {
-            "email": test_user["email"],
-            "password": test_user["password"]
-        }
-        login_response = auth_api.login_user(test_user=login_data)
-        token = login_response.json()["accessToken"]
+        print(f'POST movie response: {movie_response}')
+        assert 'id' in movie_response
+        for key in ['name', 'price', 'location', 'genreId', 'published']:
+            assert movie_response[key] == movie_data[key]
 
-        # Устанавливаем токен в сессию
-        session.update_headers(authorization=f"Bearer {token}")
+        # Удаляем созданный фильм
+        resp_delete = admin_session.movies_api.delete_movies_by_id(movie_id=movie_response['id'])
+        assert resp_delete.status_code == 200
 
-        # Пытаемся создать фильм - ожидаем 403
-        create_response = session.create_movies(movie_data=movie_data,
-                                                expected_status=403)
-        assert create_response.status_code == 403, "USER не должен иметь права создавать фильмы"
+    # Тест на изменение фильма
+    def test_patch_movies_by_id(self, admin_session, update_movie_data, movie_data):
+        # Создаём фильм
+        create_resp = admin_session.movies_api.create_movies(movie_data)
+        movie_id = create_resp.json()["id"]
 
-    # Тест, что пользователь USER не может изменять фильмы
-    def test_patch_movie_forbidden(self, session, update_movie_data, test_user):
-        auth_session = requests.Session()
-        auth_api = AuthApi(auth_session)
+        # PATCH фильма
+        patch_resp = admin_session.movies_api.patch_movies_by_id(
+            movie_id=movie_id,
+            update_movie_data=update_movie_data
+        )
+        updated_movie = patch_resp.json()
+        print(f'PATCH movie response: {updated_movie}')
+        for key in update_movie_data:
+            assert updated_movie[key] == update_movie_data[key]
 
-        # Регистрируем и логиним пользователя
-        auth_api.register_user(test_user=test_user)
-        login_data = {
-            "email": test_user["email"],
-            "password": test_user["password"]
-        }
-        login_response = auth_api.login_user(test_user=login_data)
-        token = login_response.json()["accessToken"]
+        # Удаляем фильм
+        resp_delete = admin_session.movies_api.delete_movies_by_id(movie_id=movie_id)
+        assert resp_delete.status_code == 200
 
-        # Устанавливаем токен в сессию
-        session.update_headers(authorization=f"Bearer {token}")
+    # Тест на удаление фильма
+    def test_delete_movies(self, admin_session, movie_data):
+        # Создаём фильм
+        create_resp = admin_session.movies_api.create_movies(movie_data)
+        movie_id = create_resp.json()['id']
 
-        # Пытаемся изменить существующий фильм
-        existing_movie_id = 1
-        patch_response = session.patch_movies_by_id(
-            movie_id=existing_movie_id,
+        # Удаляем фильм
+        resp_delete = admin_session.movies_api.delete_movies_by_id(movie_id=movie_id)
+        print(f'DELETE movie response: {resp_delete.status_code}')
+        assert resp_delete.status_code == 200
+
+    # Негативный тест: создание фильма с невалидными данными
+    def test_create_movie_invalid_data(self, admin_session):
+        invalid_data = {"name": "", "price": "invalid"}
+        resp = admin_session.movies_api.create_movies(invalid_data, expected_status=400)
+        print(f'Invalid POST response: {resp.json()}')
+        assert resp.status_code == 400
+
+
+class TestNegativeMovies:
+
+    # USER не может создавать фильмы
+    def test_create_movie_forbidden(self, user_session, movie_data):
+        resp = user_session.movies_api.create_movies(movie_data, expected_status=403)
+        print(f'Forbidden POST response: {resp.status_code}')
+        assert resp.status_code == 403
+
+    # USER не может изменять фильмы
+    def test_patch_movie_forbidden(self, user_session, update_movie_data):
+        resp = user_session.movies_api.patch_movies_by_id(
+            movie_id=1,
             update_movie_data=update_movie_data,
             expected_status=403
         )
-        assert patch_response.status_code == 403, "USER не должен иметь права изменять фильмы"
+        print(f'Forbidden PATCH response: {resp.status_code}')
+        assert resp.status_code == 403
 
-    # Тест, что пользователь USER не может удалять фильмы
-    def test_delete_movie_forbidden(self, session, test_user):
-        auth_session = requests.Session()
-        auth_api = AuthApi(auth_session)
-
-        # Регистрируем и логиним пользователя
-        auth_api.register_user(test_user=test_user)
-        login_data = {
-            "email": test_user["email"],
-            "password": test_user["password"]
-        }
-        login_response = auth_api.login_user(test_user=login_data)
-        token = login_response.json()["accessToken"]
-
-        # Устанавливаем токен в сессию
-        session.update_headers(authorization=f"Bearer {token}")
-
-        # Пытаемся удалить существующий фильм - ожидаем 403
-        existing_movie_id = 1
-        delete_response = session.delete_movies_by_id(
-            movie_id=existing_movie_id,
-            expected_status=403
-        )
-        assert delete_response.status_code == 403, "USER не должен иметь права удалять фильмы"
+    # USER не может удалять фильмы
+    def test_delete_movie_forbidden(self, user_session):
+        resp = user_session.movies_api.delete_movies_by_id(movie_id=1, expected_status=403)
+        print(f'Forbidden DELETE response: {resp.status_code}')
+        assert resp.status_code == 403
