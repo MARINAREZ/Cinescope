@@ -5,6 +5,7 @@ from constants import ADMIN_USER
 
 faker = Faker()
 
+
 @pytest.fixture(scope='function')
 def test_user():
     """Генерация случайного пользователя"""
@@ -50,11 +51,13 @@ def update_movie_data():
 
 @pytest.fixture(scope="function")
 def admin_session():
+    """ApiManager с авторизацией под админом"""
     import requests
     session = requests.Session()
     api_manager = ApiManager(session)
-    api_manager.auth_api.authenticate(ADMIN_USER)
+    api_manager.auth_api.authenticate(ADMIN_USER)  # Используем существующий метод
     return api_manager
+
 
 @pytest.fixture(scope='function')
 def user_session(test_user):
@@ -65,3 +68,22 @@ def user_session(test_user):
     api_manager.auth_api.register_user(test_user=test_user)
     api_manager.auth_api.authenticate(test_user)
     return api_manager
+
+
+@pytest.fixture(scope='function')
+def created_movie(admin_session, movie_data):
+    """
+    Создаёт фильм через API и возвращает его данные.
+    После теста фильм удаляется (cleanup).
+    """
+    # Создаём фильм
+    response = admin_session.movies_api.create_movie(movie_data)
+    movie = response.json()  # <-- если response это объект requests.Response
+
+    yield movie
+
+    # Cleanup: удаляем фильм после теста
+    try:
+        admin_session.movies_api.delete_movie_by_id(movie['id'])
+    except Exception as e:
+        print(f"Cleanup error: не удалось удалить фильм {movie['id']}: {e}")

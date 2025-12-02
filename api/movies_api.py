@@ -9,7 +9,7 @@ class MoviesApi(CustomRequester):
         super().__init__(session=session, base_url=MOVIE_BASE_URL)
 
     # Создание фильма
-    def create_movies(self, movie_data, expected_status=201):
+    def create_movie(self, movie_data, expected_status=201):
         return self.send_requester(
             method="POST",
             endpoint=MOVIES_ENDPOINT,
@@ -17,33 +17,33 @@ class MoviesApi(CustomRequester):
             expected_status=expected_status
         )
 
-    # Получение фильмов
+    # Получение списка фильмов
     def get_movies(self, params=None, expected_status=200):
         return self.send_requester(
             method="GET",
             endpoint=MOVIES_ENDPOINT,
-            params = params,
+            params=params,
             expected_status=expected_status
         )
 
-    # Получение фильма по ID
-    def get_movies_by_id(self, movie_id, expected_status=200):
+    # Получение одного фильма по ID
+    def get_movie_by_id(self, movie_id, expected_status=200):
         return self.send_requester(
             method="GET",
             endpoint=f'{MOVIES_ENDPOINT}/{movie_id}',
             expected_status=expected_status
         )
 
-    # Удаление фильма по ID
-    def delete_movies_by_id(self, movie_id, expected_status=200):
+    # Удаление одного фильма по ID
+    def delete_movie_by_id(self, movie_id, expected_status=200):
         return self.send_requester(
             method="DELETE",
             endpoint=f'{MOVIES_ENDPOINT}/{movie_id}',
             expected_status=expected_status
         )
 
-    # Изменения фильма по ID
-    def patch_movies_by_id(self, movie_id, update_movie_data, expected_status=200):
+    # Изменение одного фильма по ID
+    def patch_movie_by_id(self, movie_id, update_movie_data, expected_status=200):
         return self.send_requester(
             method="PATCH",
             endpoint=f'{MOVIES_ENDPOINT}/{movie_id}',
